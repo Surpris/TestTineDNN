@@ -42,37 +42,13 @@ bool load_csv(string& fpath, vector<vector<string>> &dst);
 ***/
 vector<string> split(string& str, char delimiter);
 
+/***
+	Load a dataset of iris characteristics and labels.
+	@param X       destination of characteristics
+	@param y       destination of labels
+	@return        success (true) of failure (false) in loading
+***/
 bool load_iris_vec_t(vector<vec_t> &X, vector<vec_t> &y);
-
-/***
-	Load a dataset of iris characteristics and labels.
-	@param X       destination of characteristics
-	@param y       destination of labels
-	@return        success (true) of failure (false) in loading
-***/
-bool load_iris(vector<vector<float>> &X, vector<vector<int>> &y);
-
-/***
-	Load a dataset of iris characteristics and labels.
-	@param X       destination of characteristics
-	@param y       destination of labels
-	@return        success (true) of failure (false) in loading
-***/
-bool load_iris(vector<vector<float>> &X, vector<int> &y);
-
-/***
-	Convert each label into value.
-	@param y      labels
-	@return       converted labels
-***/
-vector<int> labeling(vector<string> &y);
-
-/***
-	Convert each label into value.
-	@param y      labels
-	@return       converted labels
-***/
-vector<int> labeling(vector<int> &y);
 
 /***
 	Convert each label into value.
@@ -87,13 +63,6 @@ vector<int> labeling(vector<float> &y, float s = 0);
 	@return       converted labels
 ***/
 vector<vec_t> labeling_vec_t(vector<string> &y);
-
-/***
-	Convert each label into vactor.
-	@param y      labels
-	@return       converted labels
-***/
-vector<vector<int>> labeling_vector(vector<string> &y);
 
 /***
 	Convert each label into vactor.

@@ -133,34 +133,28 @@ void test_load_csv(string& fpath) {
 }
 
 void test_load_iris(void) {
-	vector<vector<float>> X;
+	vector<vec_t> X;
 #if true
-	vector<int> y;
+	vector<vec_t> y;
 #else
 	vector<vector<int>> y;
 #endif
-	bool success = load_iris(X, y);
+	bool success = load_iris_vec_t(X, y);
 	if (success) {
-		for each (vector<float> var in X) {
+		for each (vec_t var in X) {
 			string str = "";
 			for (int i = 0; i < (int)var.size(); i++) {
 				str += to_string(var[i]) + ",";
 			}
 			cout << str << endl;
 		}
-#if true
-		for each (int var in y) {
-			cout << var << endl;
-		}
-#else
-		for each (vector<int> var in y) {
+		for each (vec_t var in y) {
 			string str = "";
 			for (int i = 0; i < (int)var.size(); i++) {
 				str += to_string(var[i]) + ",";
 			}
 			cout << str << endl;
 		}
-#endif
 	} else {
 		cout << "Failure in test_load_iris " << endl;
 	}
@@ -241,121 +235,6 @@ bool load_iris_vec_t(vector<vec_t> &X, vector<vec_t> &y){
 	y = labeling_vec_t(labels);
 
 	return true;
-}
-
-bool load_iris(vector<vector<float>> &X, vector<vector<int>> &y) {
-	// Load a dataset.
-	string fpath = ".\\data\\iris.csv";
-	vector<vector<string>> out_csv;
-	if (!load_csv(fpath, out_csv)) {
-		return false;
-	}
-	
-	// Separate characteristics from labels.
-	int n_char = 4;
-	vector<string> labels;
-	for each (vector<string> var in out_csv) {
-		vector<float> chars;
-		for (int i = 0; i < n_char; i++) {
-			try {
-				chars.push_back(stof(var[i]));
-			} catch (const std::invalid_argument &e) {
-				cout << e.what() << endl;
-				chars.push_back(0.0);
-			}
-		}
-		X.push_back(chars);
-		labels.push_back(var[n_char]);
-	}
-
-	// Convert labels into numeric labels.
-	y = labeling_vector(labels);
-
-	return true;
-}
-
-bool load_iris(vector<vector<float>> &X, vector<int> &y) {
-	// Load a dataset.
-	string fpath = ".\\data\\iris.csv";
-	vector<vector<string>> out_csv;
-	if (!load_csv(fpath, out_csv)) {
-		return false;
-	}
-
-	// Separate characteristics from labels.
-	int n_char = 4;
-	vector<string> labels;
-	for each (vector<string> var in out_csv) {
-		vector<float> chars;
-		for (int i = 0; i < n_char; i++) {
-			try {
-				chars.push_back(stof(var[i]));
-			} catch (const std::invalid_argument &e) {
-				cout << e.what() << endl;
-				chars.push_back(0.0);
-			}
-		}
-		X.push_back(chars);
-		labels.push_back(var[n_char]);
-	}
-
-	// Convert labels into numeric labels.
-	y = labeling(labels);
-
-	return true;
-}
-
-vector<int> labeling(vector<string> &y) {
-	// Extract unique labels.
-	vector<string> buff = vector<string>(y);
-	sort(buff.begin(), buff.end());
-	buff.erase(unique(buff.begin(), buff.end()));
-
-	// Convert.
-	vector<int> result;
-	vector<string>::iterator it;
-	for each (string str in y) {
-		it = find(buff.begin(), buff.end(), str);
-		int pos = (int)distance(buff.begin(), it);
-		result.push_back(pos);
-	}
-	return result;
-}
-
-vector<int> labeling(vector<int> &y) {
-	// Extract unique labels.
-	vector<int> buff = vector<int>(y);
-	sort(buff.begin(), buff.end());
-	buff.erase(unique(buff.begin(), buff.end()));
-
-	// Convert.
-	vector<int> result;
-	vector<int>::iterator it;
-	for each (int str in y) {
-		it = find(buff.begin(), buff.end(), str);
-		int pos = (int)distance(buff.begin(), it);
-		result.push_back(pos);
-	}
-	return result;
-}
-
-vector<vector<int>> labeling_vector(vector<string> &y) {
-	// Extract unique labels.
-	vector<string> buff = vector<string>(y);
-	sort(buff.begin(), buff.end());
-	buff.erase(unique(buff.begin(), buff.end()), buff.end());
-
-	// Convert.
-	vector<vector<int>> result;
-	vector<string>::iterator it;
-	for each (string str in y) {
-		vector<int> label = vector<int>((int)buff.size(), 0);
-		it = find(buff.begin(), buff.end(), str);
-		int pos = (int)distance(buff.begin(), it);
-		label[pos] = 1;
-		result.push_back(label);
-	}
-	return result;
 }
 
 vector<vec_t> labeling_vec_t(vector<string> &y) {
