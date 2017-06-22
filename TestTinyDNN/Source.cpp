@@ -1,4 +1,4 @@
-#include "Header.h"
+#include "Models.h"
 
 using namespace std;
 
@@ -22,7 +22,7 @@ void test_dnn_get_layer_types(void) {
 	}
 }
 
-void dnn_iris(size_t batch_size, size_t epoch) {
+void dnn_iris(size_t iter) {
 	cout << "Function: " << __FUNCTION__ << endl;
 
 	// Load an iris dataset.
@@ -37,46 +37,42 @@ void dnn_iris(size_t batch_size, size_t epoch) {
 
 		timer t;
 
-		// Define a model.
-		network<sequential> model;
-		size_t n_neural = 100;
-		model << fc(X[0].size(), n_neural) << activation::tanh()
-			<< fc(n_neural, y[0].size()) << activation::softmax();
-		
-		// Train the model.
-		adagrad opt;
-		cout << "Start training..." << endl;
-		cout << "Batch_size, epoch: " << batch_size << "," << epoch << endl;
-		t.start();
-		model.train<cross_entropy_multiclass>(opt, X_train, y_train, batch_size, epoch);
-		t.stop();
-		cout << "Training finished." << endl;
-		cout << "Elapsed time of training: " << 
-			fixed << setprecision(2) << t.elapsed() << " sec." << endl;
+		cout << "BatchSize, Epoch, Time, Loss(Test), Accuracy(Test)" << endl;
+		for (size_t i = 1; i <= iter; i++) {
+			// Define a model.
+			network<sequential> model = create_model_1(X, y);
 
-		// Report.
-		double loss = model.get_loss<cross_entropy_multiclass>(X, y);
-		double accuracy = 0.0;
-		for (int i = 0; i < X_test.size(); i++) {
-			label_t label = model.predict_label(X_test[i]);
-			vec_t pred = vec_t(y_test[0].size(), 0.0);
-			pred[label] = 1.0;
-			vec_t answer = y_test[i];
-#if false
-			cout << "[" << pred[0] << "," << pred[1] << "," << pred[2] << "]"
-				<< "[" << answer[0] << "," << answer[1] << "," << answer[2] << "]" << endl;
-#endif
-			float dev = 0.0f;
-			for (int j = 0; j < pred.size(); j++) {
-				dev += (float)abs(pred[j] - answer[j]);
+			// Train the model.
+			adagrad opt;
+			size_t batch_size = 10;
+			size_t epoch = 10 * i;
+			t.start();
+			model.train<cross_entropy_multiclass>(opt, X_train, y_train, batch_size, epoch);
+			t.stop();
+
+			// Report.
+			double loss = model.get_loss<cross_entropy_multiclass>(X, y);
+			double accuracy = 0.0;
+			for (int i = 0; i < X_test.size(); i++) {
+				label_t label = model.predict_label(X_test[i]);
+				vec_t pred = vec_t(y_test[0].size(), 0.0);
+				pred[label] = 1.0;
+				vec_t answer = y_test[i];
+				float dev = 0.0f;
+				for (int j = 0; j < pred.size(); j++) {
+					dev += (float)abs(pred[j] - answer[j]);
+				}
+				if (dev == 0.0f) {
+					accuracy += 1.0;
+				}
 			}
-			if (dev == 0.0f) {
-				accuracy += 1.0;
-			}
+			accuracy /= (double)X_test.size();
+			cout << batch_size << ", " 
+				<< epoch << ", " 
+				<< fixed << setprecision(2) << t.elapsed() << " sec., "
+				<< fixed << setprecision(4) << loss << ", "
+				<< fixed << setprecision(4) << accuracy << endl;
 		}
-		accuracy /= (double)X_test.size();
-		cout << "Loss: " << fixed << setprecision(4) << loss 
-			<< ", Accuracy: " << fixed << setprecision(4) << accuracy << endl;
 	} else {
 		cout << "Failure in loading data." << endl;
 	}
@@ -364,3 +360,4 @@ void split_train_data(const vector<vec_t> X, const vector<vec_t> y,
 	}
 	X_train = x1; y_train = y1; X_test = x2; y_test = y2;
 }
+

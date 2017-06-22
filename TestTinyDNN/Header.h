@@ -15,7 +15,7 @@ using namespace tiny_dnn;
 
 void test_dnn_get_layer_types(void);
 
-void dnn_iris(size_t batch_size = 1, size_t epoch = 10);
+void dnn_iris(size_t iter = 10);
 
 void test_load_csv(string& fpath);
 

@@ -1,61 +1,11 @@
-﻿Function: dnn_iris
-Start training...
-Batch_size, epoch: 10,10
-Training finished.
-Elapsed time of training: 3.95 sec.
-Loss: 92.2440, Accuracy: 0.6944
-Function: dnn_iris
-Start training...
-Batch_size, epoch: 10,20
-Training finished.
-Elapsed time of training: 7.03 sec.
-Loss: 65.5258, Accuracy: 0.6944
-Function: dnn_iris
-Start training...
-Batch_size, epoch: 10,30
-Training finished.
-Elapsed time of training: 10.86 sec.
-Loss: 62.9554, Accuracy: 0.7500
-Function: dnn_iris
-Start training...
-Batch_size, epoch: 10,40
-Training finished.
-Elapsed time of training: 14.84 sec.
-Loss: 51.8333, Accuracy: 0.8889
-Function: dnn_iris
-Start training...
-Batch_size, epoch: 10,50
-Training finished.
-Elapsed time of training: 18.56 sec.
-Loss: 52.2328, Accuracy: 0.8889
-Function: dnn_iris
-Start training...
-Batch_size, epoch: 10,60
-Training finished.
-Elapsed time of training: 22.28 sec.
-Loss: 47.6374, Accuracy: 0.9167
-Function: dnn_iris
-Start training...
-Batch_size, epoch: 10,70
-Training finished.
-Elapsed time of training: 27.04 sec.
-Loss: 46.4205, Accuracy: 0.9167
-Function: dnn_iris
-Start training...
-Batch_size, epoch: 10,80
-Training finished.
-Elapsed time of training: 30.26 sec.
-Loss: 43.7856, Accuracy: 0.9167
-Function: dnn_iris
-Start training...
-Batch_size, epoch: 10,90
-Training finished.
-Elapsed time of training: 35.74 sec.
-Loss: 36.4594, Accuracy: 0.9167
-Function: dnn_iris
-Start training...
-Batch_size, epoch: 10,100
-Training finished.
-Elapsed time of training: 38.84 sec.
-Loss: 34.6639, Accuracy: 0.9444
-Enter>
+﻿Batch_size, Epoch, Elapsed time of training, Loss, Accuracy
+10, 10,  3.95 sec, 92.2440, 0.6944
+10, 20,  7.03 sec, 65.5258, 0.6944
+10,  30, 10.86 sec, 62.9554, 0.7500
+10,  40, 14.84 sec, 51.8333, 0.8889
+10,  50, 18.56 sec, 52.2328, 0.8889
+10,  60, 22.28 sec, 47.6374, 0.9167
+10,  70, 27.04 sec, 46.4205, 0.9167
+10,  80, 30.26 sec, 43.7856, 0.9167
+10,  90, 35.74 sec, 36.4594, 0.9167
+10, 100, 38.84 sec, 34.6639, 0.9444

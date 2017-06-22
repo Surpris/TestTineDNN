@@ -6,9 +6,7 @@ int main(void) {
 	//test_dnn_get_layer_types();
 	
 	try {
-		for (int i = 1; i <= 10; i++) {
-			dnn_iris(10, 10 * i);
-		}
+		dnn_iris(10);
 	} catch (exception e) {
 		cout << e.what() << endl;
 	}
