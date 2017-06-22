@@ -33,11 +33,11 @@ void dnn_iris(size_t iter) {
 		int seed = 0;
 		double train_ratio = 0.3;
 		vector<vec_t> X_train, y_train, X_test, y_test;
-		split_train_data(X, y, X_train, y_train, X_test, y_test, seed, train_ratio);
+		split_train_test(X, y, X_train, y_train, X_test, y_test, seed, train_ratio);
 
 		timer t;
 
-		cout << "BatchSize, Epoch, Time, Loss(Test), Accuracy(Test)" << endl;
+		cout << "BatchSize, Epoch, Time, Loss(Train), Accuracy(Train), Loss(Test), Accuracy(Test)" << endl;
 		for (size_t i = 1; i <= iter; i++) {
 			// Define a model.
 			network<sequential> model = create_model_1(X, y);
@@ -51,27 +51,17 @@ void dnn_iris(size_t iter) {
 			t.stop();
 
 			// Report.
-			double loss = model.get_loss<cross_entropy_multiclass>(X, y);
-			double accuracy = 0.0;
-			for (int i = 0; i < X_test.size(); i++) {
-				label_t label = model.predict_label(X_test[i]);
-				vec_t pred = vec_t(y_test[0].size(), 0.0);
-				pred[label] = 1.0;
-				vec_t answer = y_test[i];
-				float dev = 0.0f;
-				for (int j = 0; j < pred.size(); j++) {
-					dev += (float)abs(pred[j] - answer[j]);
-				}
-				if (dev == 0.0f) {
-					accuracy += 1.0;
-				}
-			}
-			accuracy /= (double)X_test.size();
+			double loss_train = model.get_loss<cross_entropy_multiclass>(X_train, y_train);
+			double accuracy_train = get_accuracy(model, X_train, y_train);
+			double loss_test = model.get_loss<cross_entropy_multiclass>(X_test, y_test);
+			double accuracy_test = get_accuracy(model, X_test, y_test);
 			cout << batch_size << ", " 
 				<< epoch << ", " 
 				<< fixed << setprecision(2) << t.elapsed() << " sec., "
-				<< fixed << setprecision(4) << loss << ", "
-				<< fixed << setprecision(4) << accuracy << endl;
+				<< fixed << setprecision(4) << loss_train << ", "
+				<< fixed << setprecision(4) << accuracy_train << ", "
+				<< fixed << setprecision(4) << loss_test << ", "
+				<< fixed << setprecision(4) << accuracy_test << endl;
 		}
 	} else {
 		cout << "Failure in loading data." << endl;
@@ -130,7 +120,7 @@ void test_load_iris(void) {
 	}
 }
 
-void test_split_train_data(void) {
+void test_split_train_test(void) {
 	cout << "seed?" << endl;
 	string str;
 	getline(cin, str);
@@ -143,7 +133,7 @@ void test_split_train_data(void) {
 	vector<vec_t> y;
 	if (load_iris_vec_t(X, y)) {
 		vector<vec_t> X_train, y_train, X_test, y_test;
-		split_train_data(X, y, X_train, y_train, X_test, y_test, seed, train_ratio);
+		split_train_test(X, y, X_train, y_train, X_test, y_test, seed, train_ratio);
 		cout << "# of train data: " << X_train.size() << ", " << y_train.size() << endl;
 		cout << "# of train data: " << X_test.size() << ", " << y_test.size() << endl;
 	} else {
@@ -341,7 +331,7 @@ vector<vec_t> labeling_vec_t(vector<string> &y) {
 	return result;
 }
 
-void split_train_data(const vector<vec_t> X, const vector<vec_t> y,
+void split_train_test(const vector<vec_t> X, const vector<vec_t> y,
 	vector<vec_t> &X_train, vector<vec_t> &y_train,
 	vector<vec_t> &X_test, vector<vec_t> &y_test,
 	int seed, double test_ratio) {
@@ -361,3 +351,34 @@ void split_train_data(const vector<vec_t> X, const vector<vec_t> y,
 	X_train = x1; y_train = y1; X_test = x2; y_test = y2;
 }
 
+
+map<string, double> get_loss_accuracy(network<sequential> model,
+	const vector<vec_t> X, const vector<vec_t> y) {
+	map<string, double> result;
+
+	double loss = model.get_loss<cross_entropy_multiclass>(X, y);
+	double accuracy = get_accuracy(model, X, y);
+	result["loss"] = loss;
+	result["accuracy"] = accuracy;
+	return result;
+}
+
+double get_accuracy(network<sequential> model,
+	const vector<vec_t> X, const vector<vec_t> y) {
+	double accuracy = 0.0;
+	for (int i = 0; i < X.size(); i++) {
+		label_t label = model.predict_label(X[i]);
+		vec_t pred = vec_t(y[0].size(), 0.0);
+		pred[label] = 1.0;
+		vec_t answer = y[i];
+		float dev = 0.0f;
+		for (int j = 0; j < pred.size(); j++) {
+			dev += (float)abs(pred[j] - answer[j]);
+		}
+		if (dev == 0.0f) {
+			accuracy += 1.0;
+		}
+	}
+	accuracy /= (double)X.size();
+	return accuracy;
+}

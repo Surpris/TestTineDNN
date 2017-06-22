@@ -7,6 +7,7 @@
 #include <fstream>
 #include <vector>
 #include <algorithm>
+#include <map>
 
 #include "tiny_dnn\tiny_dnn.h"
 
@@ -21,7 +22,7 @@ void test_load_csv(string& fpath);
 
 void test_load_iris(void);
 
-void test_split_train_data(void);
+void test_split_train_test(void);
 
 /***
 	Load a dataset from a path of file.
@@ -79,9 +80,9 @@ vector<int> labeling(vector<int> &y);
 vector<int> labeling(vector<float> &y, float s = 0);
 
 /***
-Convert each label into vactor.
-@param y      labels
-@return       converted labels
+	Convert each label into vactor.
+	@param y      labels
+	@return       converted labels
 ***/
 vector<vec_t> labeling_vec_t(vector<string> &y);
 
@@ -110,7 +111,27 @@ vector<vector<int>> labeling_vector(vector<float> &y, float s = 0);
 	@param seed         seed of random number
 	@param test_ratio   ratio of # of test datasets
 ***/
-void split_train_data(const vector<vec_t> X, const vector<vec_t> y, 
+void split_train_test(const vector<vec_t> X, const vector<vec_t> y, 
 	vector<vec_t> &X_train, vector<vec_t> &y_train, 
 	vector<vec_t> &X_test, vector<vec_t> &y_test, 
 	int seed = 0, double test_ratio = 0.3);
+
+/***
+	Return the loss and accuracy of a model to a dataset.
+	@param model    a network model
+	@param X        characteristics
+	@param y        labels
+	@return         map object <"loss": loss, "accuracy": accuracy>
+***/
+map<string, double> get_loss_accuracy(network<sequential> model,
+	const vector<vec_t> X, const vector<vec_t> y);
+
+/***
+	Calculate the accuracy of a model to a dataset.
+	@param model    a network model
+	@param X        characteristics
+	@param y        labels
+	@return         accuracy
+***/
+double get_accuracy(network<sequential> model,
+	const vector<vec_t> X, const vector<vec_t> y);

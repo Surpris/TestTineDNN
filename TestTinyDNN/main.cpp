@@ -12,7 +12,7 @@ int main(void) {
 	}
 	
 
-	//test_split_train_data();
+	//test_split_train_test();
 	//string fpath = ".\\data\\iris.csv";
 	//test_load_csv(fpath);
 
