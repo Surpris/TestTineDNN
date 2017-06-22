@@ -68,6 +68,52 @@ void dnn_iris(size_t iter) {
 	}
 }
 
+void dnn_iris_2(size_t iter) {
+	cout << "Function: " << __FUNCTION__ << endl;
+
+	// Load an iris dataset.
+	vector<vec_t> X;
+	vector<vec_t> y;
+
+	if (load_iris_vec_t(X, y)) {
+		int seed = 0;
+		double train_ratio = 0.3;
+		vector<vec_t> X_train, y_train, X_test, y_test;
+		split_train_test(X, y, X_train, y_train, X_test, y_test, seed, train_ratio);
+
+		timer t;
+
+		cout << "BatchSize, Epoch, Time, Loss(Train), Accuracy(Train), Loss(Test), Accuracy(Test)" << endl;
+		for (size_t i = 1; i <= iter; i++) {
+			// Define a model.
+			network<sequential> model = create_model_2(X, y);
+
+			// Train the model.
+			adagrad opt;
+			size_t batch_size = 10;
+			size_t epoch = 10 * i;
+			t.start();
+			model.train<cross_entropy_multiclass>(opt, X_train, y_train, batch_size, epoch);
+			t.stop();
+
+			// Report.
+			double loss_train = model.get_loss<cross_entropy_multiclass>(X_train, y_train);
+			double accuracy_train = get_accuracy(model, X_train, y_train);
+			double loss_test = model.get_loss<cross_entropy_multiclass>(X_test, y_test);
+			double accuracy_test = get_accuracy(model, X_test, y_test);
+			cout << batch_size << ", "
+				<< epoch << ", "
+				<< fixed << setprecision(2) << t.elapsed() << " sec., "
+				<< fixed << setprecision(4) << loss_train << ", "
+				<< fixed << setprecision(4) << accuracy_train << ", "
+				<< fixed << setprecision(4) << loss_test << ", "
+				<< fixed << setprecision(4) << accuracy_test << endl;
+		}
+	} else {
+		cout << "Failure in loading data." << endl;
+	}
+}
+
 void test_load_csv(string& fpath) {
 	cout << "Function: " << __FUNCTION__ << endl;
 

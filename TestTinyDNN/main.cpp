@@ -7,6 +7,7 @@ int main(void) {
 	
 	try {
 		dnn_iris(10);
+		dnn_iris_2(10);
 	} catch (exception e) {
 		cout << e.what() << endl;
 	}
