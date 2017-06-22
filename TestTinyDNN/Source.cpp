@@ -134,11 +134,7 @@ void test_load_csv(string& fpath) {
 
 void test_load_iris(void) {
 	vector<vec_t> X;
-#if true
 	vector<vec_t> y;
-#else
-	vector<vector<int>> y;
-#endif
 	bool success = load_iris_vec_t(X, y);
 	if (success) {
 		for each (vec_t var in X) {
