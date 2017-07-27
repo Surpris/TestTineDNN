@@ -51,25 +51,13 @@ vector<string> split(string& str, char delimiter);
 bool load_iris_vec_t(vector<vec_t> &X, vector<vec_t> &y);
 
 /***
-	Load and label some dataset.
-	Labeling is done by the following criterion:
-		Consider the last column of the dataset is to be labeled.
-		Given a value `v` in the column,
-			if  v  >  s  ,then v is labeled with a vec_t {1. 0, 0}.
-			if |v| <= s , then v is labeled with a vec_t {0. 1, 0}.
-			if  v  < -s , then v is labeled with a vec_t {0. 0, 1}.
+	Load a dataset.
+	A csv file with (chars[N], label[3]) data arrays is supposed to be loaded.
 	@param X       destination of characteristics
 	@param y       destination of labels
 	@return        success (true) of failure (false) in loading
 ***/
-bool load_and_label_by_s(string& fpath, vector<vec_t> &X, vector<vec_t> &y, float s);
-
-/***
-	Convert each label into value.
-	@param y      labels
-	@return       converted labels
-***/
-vector<int> labeling(vector<float> &y, float s = 0);
+bool load_vec_t(string& fpath, vector<vec_t> &X, vector<vec_t> &y, int label_size = 3);
 
 /***
 	Convert each label into vactor.

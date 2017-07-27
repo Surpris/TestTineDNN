@@ -214,6 +214,7 @@ bool load_iris_vec_t(vector<vec_t> &X, vector<vec_t> &y){
 	int n_char = 4;
 	vector<string> labels;
 	for each (vector<string> var in out_csv) {
+		// Characteristics.
 		vec_t chars;
 		for (int i = 0; i < n_char; i++) {
 			try {
@@ -224,12 +225,53 @@ bool load_iris_vec_t(vector<vec_t> &X, vector<vec_t> &y){
 			}
 		}
 		X.push_back(chars);
+		// Labels.
 		labels.push_back(var[n_char]);
 	}
 
 	// Convert labels into numeric labels.
 	y = labeling_vec_t(labels);
 
+	return true;
+}
+
+bool load_vec_t(string& fpath, vector<vec_t> &X, vector<vec_t> &y, int label_size) {
+	// Load a dataset.
+	vector<vector<string>> out_csv;
+	if (!load_csv(fpath, out_csv)) {
+		return false;
+	}
+
+	for each (vector<string> var in out_csv) {
+		// Characteristics.
+		int n_char = var.size() - label_size;
+		vec_t chars = vec_t();
+		for (int i = 0; i < n_char; i++) {
+			try {
+				chars.push_back(stof(var[i]));
+			} catch (const std::invalid_argument &e) {
+				cout << e.what() << endl;
+				chars.push_back(0.0);
+			}
+		}
+
+		// Labels.
+		vec_t label = vec_t();
+		for (int i = 0; i < 3; i++) {
+			try {
+				label.push_back(stof(var[n_char+i]));
+			} catch (const std::invalid_argument &e) {
+				cout << e.what() << endl;
+				if (i == 1) {
+					label.push_back(1.0);
+				} else {
+					label.push_back(0.0);
+				}
+			}
+		}
+		X.push_back(chars);
+		y.push_back(label);
+	}
 	return true;
 }
 
