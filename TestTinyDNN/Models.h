@@ -2,6 +2,7 @@
 
 using namespace std;
 using namespace tiny_dnn;
+using namespace tiny_dnn::layers;
 
 // Basic sequential model.
 network<sequential> create_model_1(const vector<vec_t> X, const vector<vec_t> y) {
