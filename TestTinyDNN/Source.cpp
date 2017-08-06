@@ -38,19 +38,35 @@ void dnn_iris(size_t iter) {
 		timer t;
 
 		cout << "BatchSize, Epoch, Time, Loss(Train), Accuracy(Train), Loss(Test), Accuracy(Test)" << endl;
-		for (size_t i = 1; i <= iter; i++) {
+		//for (size_t i = 1; i <= iter; i++) {
 			// Define a model.
 			network<sequential> model = create_model_1(X, y);
 
 			// Train the model.
 			adagrad opt;
 			size_t batch_size = 10;
-			size_t epoch = 10 * i;
+			size_t epoch = 10 * iter;
+			int epoch_now = 0;
 			t.start();
-			model.train<cross_entropy_multiclass>(opt, X_train, y_train, batch_size, epoch);
+			model.fit<cross_entropy_multiclass>(opt, X_train, y_train, batch_size, epoch, 
+				nop,
+				[&]() {
+				double loss_train = model.get_loss<cross_entropy_multiclass>(X_train, y_train);
+				double accuracy_train = get_accuracy(model, X_train, y_train);
+				double loss_test = model.get_loss<cross_entropy_multiclass>(X_test, y_test);
+				double accuracy_test = get_accuracy(model, X_test, y_test);
+				cout << batch_size << ", "
+					<< epoch++ << ", "
+					<< fixed << setprecision(2) << t.elapsed() << " sec., "
+					<< fixed << setprecision(4) << loss_train << ", "
+					<< fixed << setprecision(4) << accuracy_train << ", "
+					<< fixed << setprecision(4) << loss_test << ", "
+					<< fixed << setprecision(4) << accuracy_test << endl;
+			});
 			t.stop();
 
 			// Report.
+			/*
 			double loss_train = model.get_loss<cross_entropy_multiclass>(X_train, y_train);
 			double accuracy_train = get_accuracy(model, X_train, y_train);
 			double loss_test = model.get_loss<cross_entropy_multiclass>(X_test, y_test);
@@ -62,7 +78,8 @@ void dnn_iris(size_t iter) {
 				<< fixed << setprecision(4) << accuracy_train << ", "
 				<< fixed << setprecision(4) << loss_test << ", "
 				<< fixed << setprecision(4) << accuracy_test << endl;
-		}
+			*/
+		//}
 	} else {
 		cout << "Failure in loading data." << endl;
 	}
