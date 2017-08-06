@@ -51,17 +51,21 @@ void dnn_iris(size_t iter) {
 			model.fit<cross_entropy_multiclass>(opt, X_train, y_train, batch_size, epoch, 
 				nop,
 				[&]() {
-				double loss_train = model.get_loss<cross_entropy_multiclass>(X_train, y_train);
-				double accuracy_train = get_accuracy(model, X_train, y_train);
-				double loss_test = model.get_loss<cross_entropy_multiclass>(X_test, y_test);
-				double accuracy_test = get_accuracy(model, X_test, y_test);
-				cout << batch_size << ", "
-					<< epoch_now++ << ", "
-					<< fixed << setprecision(2) << t.elapsed() << " sec., "
-					<< fixed << setprecision(4) << loss_train << ", "
-					<< fixed << setprecision(4) << accuracy_train << ", "
-					<< fixed << setprecision(4) << loss_test << ", "
-					<< fixed << setprecision(4) << accuracy_test << endl;
+				epoch_now++;
+				if (epoch_now % 10 == 0) {
+					cout << batch_size << ", "
+						<< epoch_now << ", "
+						<< fixed << setprecision(2) << t.elapsed() << " sec., ";
+					double loss_train = model.get_loss<cross_entropy_multiclass>(X_train, y_train);
+					double accuracy_train = get_accuracy(model, X_train, y_train);
+					double loss_test = model.get_loss<cross_entropy_multiclass>(X_test, y_test);
+					double accuracy_test = get_accuracy(model, X_test, y_test);
+					cout << fixed << setprecision(4) << loss_train << ", "
+						<< fixed << setprecision(4) << accuracy_train << ", "
+						<< fixed << setprecision(4) << loss_test << ", "
+						<< fixed << setprecision(4) << accuracy_test << endl;
+					t.restart();
+				}
 			});
 			t.stop();
 
