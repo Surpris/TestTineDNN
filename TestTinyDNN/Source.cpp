@@ -56,7 +56,7 @@ void dnn_iris(size_t iter) {
 				double loss_test = model.get_loss<cross_entropy_multiclass>(X_test, y_test);
 				double accuracy_test = get_accuracy(model, X_test, y_test);
 				cout << batch_size << ", "
-					<< epoch++ << ", "
+					<< epoch_now++ << ", "
 					<< fixed << setprecision(2) << t.elapsed() << " sec., "
 					<< fixed << setprecision(4) << loss_train << ", "
 					<< fixed << setprecision(4) << accuracy_train << ", "
