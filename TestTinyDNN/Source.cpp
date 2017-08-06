@@ -24,12 +24,15 @@ void test_dnn_get_layer_types(void) {
 
 void dnn_iris(size_t iter) {
 	cout << "Function: " << __FUNCTION__ << endl;
+	string file_benchmark = ".\\data\\benchmark_dnn_iris.csv";
 
 	// Load an iris dataset.
 	vector<vec_t> X;
 	vector<vec_t> y;
 
 	if (load_iris_vec_t(X, y)) {
+		ostringstream oss;
+
 		int seed = 0;
 		double train_ratio = 0.3;
 		vector<vec_t> X_train, y_train, X_test, y_test;
@@ -37,53 +40,47 @@ void dnn_iris(size_t iter) {
 
 		timer t;
 
-		cout << "BatchSize, Epoch, Time, Loss(Train), Accuracy(Train), Loss(Test), Accuracy(Test)" << endl;
-		//for (size_t i = 1; i <= iter; i++) {
-			// Define a model.
-			network<sequential> model = create_model_1(X, y);
+		oss << "BatchSize,Epoch,Time (sec.),Loss(Train),Accuracy(Train),Loss(Test),Accuracy(Test)" << endl;
+		write_csv(file_benchmark, oss.str(), ios::trunc);
+		cout << oss.str();
+		oss.str("");
+		oss.clear(stringstream::goodbit);
 
-			// Train the model.
-			adagrad opt;
-			size_t batch_size = 10;
-			size_t epoch = 10 * iter;
-			int epoch_now = 0;
-			t.start();
-			model.fit<cross_entropy_multiclass>(opt, X_train, y_train, batch_size, epoch, 
-				nop,
-				[&]() {
-				epoch_now++;
-				if (epoch_now % 10 == 0) {
-					cout << batch_size << ", "
-						<< epoch_now << ", "
-						<< fixed << setprecision(2) << t.elapsed() << " sec., ";
-					double loss_train = model.get_loss<cross_entropy_multiclass>(X_train, y_train);
-					double accuracy_train = get_accuracy(model, X_train, y_train);
-					double loss_test = model.get_loss<cross_entropy_multiclass>(X_test, y_test);
-					double accuracy_test = get_accuracy(model, X_test, y_test);
-					cout << fixed << setprecision(4) << loss_train << ", "
-						<< fixed << setprecision(4) << accuracy_train << ", "
-						<< fixed << setprecision(4) << loss_test << ", "
-						<< fixed << setprecision(4) << accuracy_test << endl;
-					t.restart();
-				}
-			});
-			t.stop();
+		// Define a model.
+		network<sequential> model = create_model_1(X, y);
 
-			// Report.
-			/*
-			double loss_train = model.get_loss<cross_entropy_multiclass>(X_train, y_train);
-			double accuracy_train = get_accuracy(model, X_train, y_train);
-			double loss_test = model.get_loss<cross_entropy_multiclass>(X_test, y_test);
-			double accuracy_test = get_accuracy(model, X_test, y_test);
-			cout << batch_size << ", " 
-				<< epoch << ", " 
-				<< fixed << setprecision(2) << t.elapsed() << " sec., "
-				<< fixed << setprecision(4) << loss_train << ", "
-				<< fixed << setprecision(4) << accuracy_train << ", "
-				<< fixed << setprecision(4) << loss_test << ", "
-				<< fixed << setprecision(4) << accuracy_test << endl;
-			*/
-		//}
+		// Train the model.
+		adagrad opt;
+		size_t batch_size = 10;
+		size_t epoch = 10 * iter;
+		int epoch_now = 0;
+		
+		t.start();
+		model.fit<cross_entropy_multiclass>(opt, X_train, y_train, batch_size, epoch, 
+			nop,
+			[&]() {
+			epoch_now++;
+			if (epoch_now % 10 == 0) {
+				oss << batch_size << ","
+					<< epoch_now << ","
+					<< fixed << setprecision(2) << t.elapsed() << ",";
+				double loss_train = model.get_loss<cross_entropy_multiclass>(X_train, y_train);
+				double accuracy_train = get_accuracy(model, X_train, y_train);
+				double loss_test = model.get_loss<cross_entropy_multiclass>(X_test, y_test);
+				double accuracy_test = get_accuracy(model, X_test, y_test);
+				oss << fixed << setprecision(4) << loss_train << ","
+					<< fixed << setprecision(4) << accuracy_train << ","
+					<< fixed << setprecision(4) << loss_test << ","
+					<< fixed << setprecision(4) << accuracy_test << endl;
+				cout << oss.str();
+				write_csv(file_benchmark, oss.str(), ios::app);
+				oss.str("");
+				oss.clear(stringstream::goodbit);
+				t.restart();
+			}
+		});
+		t.stop();
+
 	} else {
 		cout << "Failure in loading data." << endl;
 	}
@@ -210,6 +207,19 @@ bool load_csv(string& fpath, vector<vector<string>> &dst) {
 		dst.push_back(split(str, ','));
 		rows++;
 	}
+	ifs.close();
+	return true;
+}
+
+bool write_csv(string& fpath, const string str, int mode) {
+	ofstream ofs;
+	ofs.open(fpath, mode);
+	if (!ofs) {
+		cout << "No such file:" << fpath << endl;
+		return false;
+	}
+	ofs << str;
+	ofs.close();
 	return true;
 }
 

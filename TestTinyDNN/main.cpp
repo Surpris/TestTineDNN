@@ -6,8 +6,11 @@ int main(void) {
 	//test_dnn_get_layer_types();
 	
 	try {
+		timer t_all;
+		t_all.start();
 		dnn_iris(10);
-		//dnn_iris_2(10);
+		t_all.stop();
+		cout << "Elapsed time to process all:" << fixed << setprecision(2) << t_all.elapsed() << " sec." << endl;
 	} catch (exception e) {
 		cout << e.what() << endl;
 	}
