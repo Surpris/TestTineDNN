@@ -26,13 +26,15 @@ void test_load_iris(void);
 
 void test_split_train_test(void);
 
+void test_load_data_vec_t(void);
+
 /***
 	Load a dataset from a path of file.
 	@param fpath   input file path
 	@param dst     destination of the dataset
 	@return        success (true) of failure (false) in loading
 ***/
-bool load_csv(string& fpath, vector<vector<string>> &dst);
+bool load_csv(string& fpath, vector<vector<string>> &dst, int skiprows = 0);
 
 /***
 	Write a dataset to a file.
@@ -58,6 +60,18 @@ vector<string> split(string& str, char delimiter);
 	@return        success (true) of failure (false) in loading
 ***/
 bool load_iris_vec_t(vector<vec_t> &X, vector<vec_t> &y);
+
+/***
+	Load a dataset of characteristics and labels.
+	@param fpath       input file path
+	@param X           destination of characteristics
+	@param y           destination of labels
+	@param skiprows    # of rows to skip from the 1st
+	@param skipcols    # of columns to skip from the 1st
+	pparam label_size  size of label
+	@return            success (true) of failure (false) in loading
+***/
+bool load_data_vec_t(string& fpath, vector<vec_t> &X, vector<vec_t> &y, int skiprows = 0, int skipcols = 0, int label_size = 3);
 
 /***
 	Convert each label into vactor.

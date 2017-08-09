@@ -170,7 +170,7 @@ void test_load_iris(void) {
 			cout << str << endl;
 		}
 	} else {
-		cout << "Failure in test_load_iris " << endl;
+		cout << "Failure in " << __FUNCTION__ << endl;
 	}
 }
 
@@ -195,17 +195,50 @@ void test_split_train_test(void) {
 	}
 }
 
-bool load_csv(string& fpath, vector<vector<string>> &dst) {
+void test_load_data_vec_t(void) {
+	cout << "Function: " << __FUNCTION__ << endl;
+	string fpath = ".\\data\\USDJPY-cd1_20170806_k001.csv";
+	cout << "Input file: " << fpath << endl;
+	vector<vec_t> X;
+	vector<vec_t> y;
+	bool success = load_data_vec_t(fpath, X, y, 1, 2, 3);
+	if (success) {
+		cout << X.size() << "," << y.size() << endl;
+		/*
+		for each (vec_t var in X) {
+			string str = "";
+			for (int i = 0; i < (int)var.size(); i++) {
+				str += to_string(var[i]) + ",";
+			}
+			cout << str << endl;
+		}
+		for each (vec_t var in y) {
+			string str = "";
+			for (int i = 0; i < (int)var.size(); i++) {
+				str += to_string(var[i]) + ",";
+			}
+			cout << str << endl;
+		}
+		*/
+	}
+	else {
+		cout << "Failure in " << __FUNCTION__ << endl;
+	}
+}
+
+bool load_csv(string& fpath, vector<vector<string>> &dst, int skiprows) {
 	ifstream ifs(fpath);
 	if (!ifs) {
 		cout << "No such file:" << fpath << endl;
 		return false;
 	}
-	int rows = 0;
+	int rows = 1;
 	string str;
 	while (getline(ifs, str)) {
+		if ((rows++) <= skiprows) {
+			continue;
+		}
 		dst.push_back(split(str, ','));
-		rows++;
 	}
 	ifs.close();
 	return true;
@@ -260,6 +293,47 @@ bool load_iris_vec_t(vector<vec_t> &X, vector<vec_t> &y){
 
 	// Convert labels into numeric labels.
 	y = labeling_vec_t(labels);
+
+	return true;
+}
+
+bool load_data_vec_t(string& fpath, vector<vec_t> &X, vector<vec_t> &y, int skiprows, int skipcols, int label_size) {
+	// Load a dataset.
+	vector<vector<string>> out_csv;
+	if (!load_csv(fpath, out_csv, skiprows)) {
+		return false;
+	}
+
+	// Separate characteristics from labels.
+	int label_first = (int)out_csv[0].size() - label_size;
+	vector<string> labels;
+	for each (vector<string> var in out_csv) {
+		// Characteristics.
+		vec_t chars;
+		for (int i = skipcols; i < label_first; i++) {
+			try {
+				chars.push_back(stof(var[i]));
+			}
+			catch (const std::invalid_argument &e) {
+				cout << e.what() << endl;
+				chars.push_back(0.0);
+			}
+		}
+		X.push_back(chars);
+		
+		// Labels.
+		vec_t label;
+		for (int i = label_first; i < (int)out_csv[0].size(); i++) {
+			try {
+				label.push_back(stof(var[i]));
+			}
+			catch (const std::invalid_argument &e) {
+				cout << e.what() << endl;
+				label.push_back(0.0);
+			}
+		}
+		y.push_back(label);
+	}
 
 	return true;
 }
