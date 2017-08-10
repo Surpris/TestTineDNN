@@ -79,9 +79,54 @@ void dnn_iris(size_t iter) {
 				t.restart();
 			}
 		});
+
+		// Save the model.
+		string modelname = ".\\data\\mymodel";
+		model.save(modelname);
+
 		t.stop();
 
 	} else {
+		cout << "Failure in loading data." << endl;
+	}
+}
+
+void dnn_iris_load(void) {
+	cout << "Function: " << __FUNCTION__ << endl;
+
+	vector<vec_t> X;
+	vector<vec_t> y;
+
+	if (load_iris_vec_t(X, y)) {
+		network<sequential> model;
+		string modelname = ".\\data\\mymodel";
+		model.load(modelname);
+
+		int seed = 0;
+		double train_ratio = 0.3;
+		vector<vec_t> X_train, y_train, X_test, y_test;
+		split_train_test(X, y, X_train, y_train, X_test, y_test, seed, train_ratio);
+
+		ostringstream oss;
+		oss << "Loss(Train),Accuracy(Train),Loss(Test),Accuracy(Test)" << endl;
+		cout << oss.str();
+		oss.str("");
+		oss.clear(stringstream::goodbit);
+
+		double loss_train = model.get_loss<cross_entropy_multiclass>(X_train, y_train);
+		double accuracy_train = get_accuracy(model, X_train, y_train);
+		double loss_test = model.get_loss<cross_entropy_multiclass>(X_test, y_test);
+		double accuracy_test = get_accuracy(model, X_test, y_test);
+		oss << fixed << setprecision(4) << loss_train << ","
+			<< fixed << setprecision(4) << accuracy_train << ","
+			<< fixed << setprecision(4) << loss_test << ","
+			<< fixed << setprecision(4) << accuracy_test << endl;
+		cout << oss.str();
+		oss.str("");
+		oss.clear(stringstream::goodbit);
+
+	}
+	else {
 		cout << "Failure in loading data." << endl;
 	}
 }
@@ -128,6 +173,74 @@ void dnn_iris_2(size_t iter) {
 				<< fixed << setprecision(4) << accuracy_test << endl;
 		}
 	} else {
+		cout << "Failure in loading data." << endl;
+	}
+}
+
+void dnn_fx(size_t iter) {
+	cout << "Function: " << __FUNCTION__ << endl;
+	string file_benchmark = ".\\data\\benchmark_dnn_fx.csv";
+
+	string fpath = ".\\data\\USDJPY-cd1_20170806_k030.csv";
+	cout << "Input file: " << fpath << endl;
+
+	// Load an iris dataset.
+	vector<vec_t> X;
+	vector<vec_t> y;
+
+	if (load_data_vec_t(fpath, X, y, 1, 2, 3)) {
+		ostringstream oss;
+
+		int seed = 0;
+		double train_ratio = 0.3;
+		vector<vec_t> X_train, y_train, X_test, y_test;
+		split_train_test(X, y, X_train, y_train, X_test, y_test, seed, train_ratio);
+
+		timer t;
+
+		oss << "BatchSize,Epoch,Time (sec.),Loss(Train),Accuracy(Train),Loss(Test),Accuracy(Test)" << endl;
+		write_csv(file_benchmark, oss.str(), ios::trunc);
+		cout << oss.str();
+		oss.str("");
+		oss.clear(stringstream::goodbit);
+
+		// Define a model.
+		network<sequential> model = create_model_1(X, y);
+
+		// Train the model.
+		adagrad opt;
+		size_t batch_size = 100;
+		size_t epoch = 10 * iter;
+		int epoch_now = 0;
+
+		t.start();
+		model.fit<cross_entropy_multiclass>(opt, X_train, y_train, batch_size, epoch,
+			nop,
+			[&]() {
+			epoch_now++;
+			if (epoch_now % 10 == 0) {
+				oss << batch_size << ","
+					<< epoch_now << ","
+					<< fixed << setprecision(2) << t.elapsed() << ",";
+				double loss_train = model.get_loss<cross_entropy_multiclass>(X_train, y_train);
+				double accuracy_train = get_accuracy(model, X_train, y_train);
+				double loss_test = model.get_loss<cross_entropy_multiclass>(X_test, y_test);
+				double accuracy_test = get_accuracy(model, X_test, y_test);
+				oss << fixed << setprecision(4) << loss_train << ","
+					<< fixed << setprecision(4) << accuracy_train << ","
+					<< fixed << setprecision(4) << loss_test << ","
+					<< fixed << setprecision(4) << accuracy_test << endl;
+				cout << oss.str();
+				write_csv(file_benchmark, oss.str(), ios::app);
+				oss.str("");
+				oss.clear(stringstream::goodbit);
+				t.restart();
+			}
+		});
+		t.stop();
+
+	}
+	else {
 		cout << "Failure in loading data." << endl;
 	}
 }

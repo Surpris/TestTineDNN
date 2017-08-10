@@ -18,7 +18,11 @@ void test_dnn_get_layer_types(void);
 
 void dnn_iris(size_t iter = 10);
 
+void dnn_iris_load(void);
+
 void dnn_iris_2(size_t iter = 10);
+
+void dnn_fx(size_t iter = 10);
 
 void test_load_csv(string& fpath);
 

@@ -16,9 +16,11 @@ int main(void) {
 
 		//test_load_iris();
 		
-		//dnn_iris(10);
+		dnn_iris(10);
+		dnn_iris_load();
 
-		test_load_data_vec_t();
+		//test_load_data_vec_t();
+		//dnn_fx(10);
 		t_all.stop();
 		cout << "Elapsed time to process all:" << fixed << setprecision(2) << t_all.elapsed() << " sec." << endl;
 	} catch (exception e) {
