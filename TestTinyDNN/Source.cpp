@@ -210,15 +210,15 @@ void dnn_fx(size_t iter) {
 		// Train the model.
 		adagrad opt;
 		size_t batch_size = 100;
-		size_t epoch = 10 * iter;
+		size_t epoch_size = 50;
 		int epoch_now = 0;
 
 		t.start();
-		model.fit<cross_entropy_multiclass>(opt, X_train, y_train, batch_size, epoch,
+		model.fit<cross_entropy_multiclass>(opt, X_train, y_train, batch_size, epoch_size * iter,
 			nop,
 			[&]() {
 			epoch_now++;
-			if (epoch_now % 10 == 0) {
+			if (epoch_now % epoch_size == 0) {
 				oss << batch_size << ","
 					<< epoch_now << ","
 					<< fixed << setprecision(2) << t.elapsed() << ",";
@@ -238,6 +238,11 @@ void dnn_fx(size_t iter) {
 			}
 		});
 		t.stop();
+
+		// Save the model.
+		cout << "save the trained model..." << endl;
+		string modelname = ".\\data\\myfxmodel";
+		model.save(modelname);
 
 	}
 	else {
